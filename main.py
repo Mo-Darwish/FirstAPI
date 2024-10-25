@@ -65,4 +65,7 @@ async def get_table1():
     # Return the result as JSON (list of dictionaries)
     return result_to_dict(columns, data)
 
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
 
