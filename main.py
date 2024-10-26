@@ -4,13 +4,10 @@ import clickhouse_connect
 import os
 from dotenv import load_dotenv
 #init
-# Initialize the FastAPI app
 app = FastAPI()
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-# Initialize ClickHouse client with your connection parameters
-# Load environment variables from .env file
 
 load_dotenv()
 
@@ -51,7 +48,7 @@ def result_to_dict(columns: List[str], data: List):
 
 # Endpoint for table1
 @app.get("/financials_sample_data")
-async def get_table1():
+async def get_financial():
     query = "SELECT * FROM financials_sample_data LIMIT 100"
     result = fetch_data(query)
 
@@ -63,6 +60,24 @@ async def get_table1():
     columns, data = result
 
     # Return the result as JSON (list of dictionaries)
-    return result_to_dict(columns, data)
+    return columns, data
+
+@app.get("/employee_sample_data")
+async def get_employee():
+    query = "SELECT * FROM default_raw__stream_employeesampledata LIMIT 100"
+    result = fetch_data(query)
+
+    # Check for any error in the result
+    if isinstance(result, dict) and "error" in result:
+        return result
+
+    # Extract columns and data
+    columns, data = result
+
+    # Return the result as JSON (list of dictionaries)
+    return columns, data
 
 
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
